@@ -6,22 +6,34 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-types": "dotenv -e .env -- kysely-codegen --out-file src/types/types.ts"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@neondatabase/serverless": "^1.0.1",
+    "antd": "^5.26.7",
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "kysely": "^0.28.4",
+    "next": "15.4.5",
+    "pg": "^8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.4.5"
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
-    "@eslint/eslintrc": "^3"
+    "kysely-codegen": "^0.18.5",
+    "pgtyped": "^0.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

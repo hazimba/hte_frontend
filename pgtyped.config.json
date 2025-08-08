@@ -1,0 +1,8 @@
+{
+  "srcDir": "./src",
+  "glob": "**/*.sql",
+  "emitDir": "./src/generated",
+  "db": {
+    "connectionString": "postgresql://neondb_owner:npg_kjfrEud82Liw@ep-shiny-lake-adxnp0ap-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  }
+}
