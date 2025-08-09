@@ -6,6 +6,11 @@ export const fetchProductTypes = async () => {
   return res.data;
 };
 
+export const fetchProductTypeById = async (productTypeId: number) => {
+  const res = await axios.get(`${neondb_url}/productType/${productTypeId}`);
+  return res.data;
+};
+
 export const getProductTypeOptions = async () => {
   const productTypes = await fetchProductTypes();
   return productTypes.map((type) => ({

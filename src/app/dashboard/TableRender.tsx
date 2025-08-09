@@ -1,133 +1,136 @@
-import { neondb_url } from "@/config/neondb";
-import { Spin, Switch, Table } from "antd";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import CreateAction from "./CreateAction";
+import { getProductByUserId } from "@/api/product/product";
+import { fetchDataTable } from "@/shared/DataTable";
+import { columns } from "@/shared/TableColumn";
+import { useActionState } from "@/store/action";
+import { Button, Table } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import FilterFunction from "./FilterFunction";
+import ModalCreateProduct from "./modal-product/Create";
+import ModalUpdate from "./modal-product/Update";
+import ModalView from "./modal-product/View";
 
 interface TableRenderProps {
   tab: string;
+  userId?: string;
 }
 
-const TableRender = ({ tab }: TableRenderProps) => {
+const TableRender = ({ tab, userId }: TableRenderProps) => {
   const [data, setData] = useState([]);
-  const [actions, setActions] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState({
+    name: "",
+    condition: null,
+    product_type_id: [],
+    // favorite: false,
+  });
+
+  const toggleAction = useActionState((state) => state.toggleAction);
+  const setToggleAction = useActionState((state) => state.setToggleAction);
+  console.log("tab:", tab);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setData([]);
+
+    try {
+      let result = [];
+      if (tab === "owner" && userId) {
+        result = await getProductByUserId(userId);
+      } else {
+        result = await fetchDataTable(tab, filter);
+      }
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [tab, userId, setData, filter]);
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get(`${neondb_url}/${tab}`);
+    fetchData();
+  }, [tab, userId, fetchData, filter]);
 
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetch();
-  }, [tab]);
-
-  const columns = Object.keys(data[0] || {})
-    .filter(
-      (key) =>
-        key !== "id" &&
-        key !== "created_at" &&
-        key !== "updated_at" &&
-        key !== "uuid" &&
-        key !== "product_type_id" &&
-        key !== "user_id" &&
-        key !== "is_sold"
-    )
-    .map((key) => ({
-      title: key.charAt(0).toUpperCase() + key.slice(1),
-      dataIndex: key,
-      key: key,
-    }));
-
-  // columns.push({
-  //   title: "Actions",
-  //   key: "actions",
-  //   // @ts-expect-error: Ant Design Table expects a specific type for render, but dynamic columns may not match
-  //   render: (_, record) => (
-  //     <div className="flex gap-2">
-  //       <span
-  //         className="text-blue-500 cursor-pointer"
-  //         onClick={() => console.log("Edit user:", record)}
-  //       >
-  //         Edit
-  //       </span>
-  //       <DeleteAction
-  //         tab={tab}
-  //         record={record}
-  //         onDelete={(id) => {
-  //           setData((prevUsers) => prevUsers.filter((user) => user.id !== id));
-  //         }}
-  //       />
-  //       {tab === "product" && (
-  //         <StarOutlined onClick={(e) => e.stopPropagation()} />
-  //       )}
-  //     </div>
-  //   ),
-  // });
-
-  if (tab === "product") {
-    columns.push({
-      title: "Add to Favorites",
-      key: "add_to_favorites",
-      // @ts-expect-error: Ant Design Table expects a specific type for render, but dynamic columns may not match
-      align: "center",
-      render: (_, record) => (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="flex justify-center"
-        >
-          <Switch
-            className="text-yellow-500 cursor-pointer"
-            onChange={(e) => console.log("Toggle favorite:", record, e)}
-          />
-        </div>
-      ),
-    });
-  }
+  const refetch = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <>
-      <div
-        className="flex justify-end cursor-pointer"
-        onClick={() => setActions(!actions)}
-      >
-        {!actions ? "Show Action" : "Hide Action"}
-      </div>
-      {actions ? (
-        <span className="mr-4 flex justify-between">
-          <FilterFunction />
-          {tab === "product" && <CreateAction tab={tab} setData={setData} />}
-        </span>
+      <Button onClick={() => refetch()}>Refresh</Button>
+      {tab === "product" || tab === "owner" ? (
+        <div
+          className="flex justify-end cursor-pointer"
+          onClick={() => setToggleAction()}
+        >
+          {!toggleAction ? "Show Action" : "Hide Action"}
+        </div>
       ) : (
-        <></>
+        <div className="text-transparent">1</div>
+      )}
+      {!toggleAction && (
+        <span className="mr-4 flex justify-between">
+          {(tab === "product" || tab === "owner") && (
+            <FilterFunction onFilterChange={(values) => setFilter(values)} />
+          )}
+          {tab === "owner" && (
+            <ModalCreateProduct
+              tab={tab === "owner" ? "product" : tab}
+              setData={setData}
+              setOpenModal={setOpenModal}
+              openModal={openModal}
+              userId={userId}
+            />
+          )}
+        </span>
       )}
       {data.length > 0 ? (
         <Table
           key={tab}
+          loading={loading}
           rowKey={"uuid"}
-          pagination={{ pageSize: actions ? 3 : 8 }}
+          pagination={{ pageSize: toggleAction ? 8 : 5 }}
           scroll={{ y: "calc(100vh - 200px)" }}
           dataSource={data}
-          columns={columns}
+          columns={columns(
+            data,
+            tab,
+            refetch,
+            setOpenEditModal,
+            setSelectedRow
+          )}
           onRow={(record) => ({
             onClick: () => {
-              console.log("Row clicked:", record);
+              setOpenViewModal(true);
+              setSelectedRow(record);
             },
           })}
         />
       ) : (
-        <div className="flex justify-center items-center h-screen">
-          <Spin
-            size="large"
-            className="flex w-full h-screen justify-center items-center h-full"
-          />
+        <div className="flex justify-center items-center">
+          <div>Data not available/ not found</div>
         </div>
       )}
+      <ModalView
+        tab={tab}
+        setData={setData}
+        selectedRow={selectedRow}
+        openViewModal={openViewModal}
+        setOpenViewModal={setOpenViewModal}
+      />
+      <ModalUpdate
+        tab="product"
+        setData={setData}
+        selectedRow={selectedRow}
+        setOpenModal={setOpenEditModal}
+        openModal={openEditModal}
+        userId={selectedRow?.user_id}
+        isEdit={true}
+      />
     </>
   );
 };

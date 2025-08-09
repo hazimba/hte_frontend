@@ -1,12 +1,12 @@
 "use client";
 import { getConditionOptions } from "@/shared/ConditionOptions";
-import { Button, Form, Input, Select } from "antd";
-import { getProductTypeOptions } from "@/shared/ProductTypeOptions";
-import { getUserOption } from "@/shared/UserOptions";
+import { Button, Checkbox, Form, Input, Select } from "antd";
+import { getProductTypeOptions } from "@/api/product-type/product-type";
+import { getUserOption } from "@/api/user/user";
 
 import React, { useEffect, useState } from "react";
 
-const FilterFunction = () => {
+const FilterFunction = ({ onFilterChange }) => {
   const [form] = Form.useForm();
   const [productTypeOptions, setProductTypeOptions] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
@@ -26,43 +26,70 @@ const FilterFunction = () => {
     fetchProductTypeOptions();
   }, []);
 
+  const handleChange = (changedValue) => {
+    form.setFieldsValue(changedValue);
+    const updated = { ...form.getFieldsValue(), ...changedValue };
+    onFilterChange(updated);
+  };
+
   return (
-    <Form
-      form={form}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        textAlign: "left",
-      }}
-      className=""
-      onFinish={(values) => console.log("Filter values:", values)}
-    >
-      <Form.Item name="name" label="Name">
-        <Input placeholder="Search by name" />
-      </Form.Item>
-      <Form.Item name="product_type_id" label="Product Type">
-        <Select
-          placeholder="Select product type"
-          options={productTypeOptions}
-          allowClear
-        />
-      </Form.Item>
-      <Form.Item name="condition" label="Condition">
-        <Select
-          placeholder="Select condition"
-          options={getConditionOptions()}
-          allowClear
-        />
-      </Form.Item>
-      <Form.Item name="user_id" label="Owner">
-        <Select
-          placeholder="Select owner"
-          options={userOptions}
-          mode="multiple"
-        />
-      </Form.Item>
-      <div className="flex items-center mb-7">
-        <Button type="primary" htmlType="submit" className="w-full">
+    <Form form={form} onValuesChange={handleChange}>
+      <div className="mb-4">
+        {/* <div className="flex flex-col"> */}
+        <div className="flex gap-4">
+          <Form.Item name="name">
+            <Input placeholder="Search by name" />
+          </Form.Item>
+          <Form.Item name="condition" valuePropName="value">
+            <Select
+              placeholder="Select condition"
+              options={getConditionOptions()}
+              allowClear
+              onChange={(value) =>
+                onFilterChange((prev) => ({ ...prev, condition: value }))
+              }
+            />
+          </Form.Item>
+          <Form.Item name="product_type_id">
+            <Select
+              placeholder="Select product type"
+              options={productTypeOptions}
+              allowClear
+              mode="multiple"
+              style={{ minWidth: "200px", maxWidth: "400px" }}
+              onChange={(value) =>
+                onFilterChange((prev) => ({ ...prev, product_type_id: value }))
+              }
+            />
+          </Form.Item>
+          {/* <Form.Item
+            name="favorite"
+            valuePropName="checked"
+            initialValue={false}
+          >
+            <Checkbox
+              onChange={(e) =>
+                onFilterChange((prev) => ({
+                  ...prev,
+                  favorite: e.target.checked,
+                }))
+              }
+            />
+          </Form.Item> */}
+        </div>
+        {/* <div className="flex justify-between">
+            <Form.Item name="user_id">
+              <Select
+                placeholder="Select owner"
+                options={userOptions}
+                mode="multiple"
+                style={{ width: "530px" }}
+                onChange={(value) => console.log("Selected users:", value)}
+              />
+            </Form.Item>
+          </div> */}
+        {/* </div> */}
+        <Button type="primary" htmlType="submit" className="">
           Filter
         </Button>
       </div>

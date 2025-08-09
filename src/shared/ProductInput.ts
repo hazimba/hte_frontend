@@ -1,7 +1,10 @@
 import { getConditionOptions } from "./ConditionOptions";
-import { getProductTypeOptions } from "./ProductTypeOptions";
+import { getProductTypeOptions } from "../api/product-type/product-type";
 
 export const productInput = async () => {
+  const productTypeOptions = await getProductTypeOptions();
+  const conditionOptions = getConditionOptions();
+
   return [
     {
       name: "name",
@@ -38,7 +41,7 @@ export const productInput = async () => {
       key: "product_type_id",
       label: "Product Type",
       type: "select",
-      options: getProductTypeOptions(),
+      options: productTypeOptions,
       rules: [{ required: true, message: "Please select the product type!" }],
     },
     {
@@ -46,7 +49,7 @@ export const productInput = async () => {
       key: "condition",
       label: "Condition",
       type: "select",
-      options: getConditionOptions(),
+      options: conditionOptions,
       rules: [
         { required: true, message: "Please select the product condition!" },
       ],
