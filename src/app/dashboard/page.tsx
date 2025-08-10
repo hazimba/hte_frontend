@@ -1,14 +1,14 @@
 "use client";
 import { useUserLoggedInState } from "@/store/user";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
-import { Spin, Tabs } from "antd";
+import { Tabs } from "antd";
 import Link from "next/link";
-import TableRender from "./TableRender";
 import { useState } from "react";
+import TableRender from "./TableRender";
 
 const Dashboard = () => {
   const user = useUserLoggedInState((state) => state.user);
-  const [activeKey, setActiveKey] = useState("products");
+  const [activeKey, setActiveKey] = useState("your-products");
   const items = [
     { key: "products", label: "Products" },
     { key: "product-types", label: "Product Types" },
@@ -16,24 +16,23 @@ const Dashboard = () => {
     { key: "your-products", label: "Your Products" },
   ];
 
+  // table display is shared component
+  // so we can use the same component for all tabs
+  // userId is pass for action state
   const renderTabContent = () => {
     switch (activeKey) {
       case "products":
-        return <TableRender tab="product" userId={user.id} />;
+        return <TableRender tab="product" userId={user?.id} />;
       case "product-types":
         return <TableRender tab="productType" />;
       case "users":
         return <TableRender tab="user" />;
       case "your-products":
-        return <TableRender tab="owner" userId={user.id} />;
+        return <TableRender tab="owner" userId={user?.id} />;
       default:
         return null;
     }
   };
-
-  if (!user) {
-    <Spin className="!h-screen !w-screen" />;
-  }
 
   return (
     <div className="flex flex-col items-center !h-screen w-screen p-2 gap-2 bg-gray-200">
@@ -49,7 +48,7 @@ const Dashboard = () => {
         onChange={setActiveKey}
         className="w-[100%] rounded"
         centered
-        destroyOnHidden={true} // still good to keep
+        destroyOnHidden={true}
         items={items}
       />
       <div className="w-[100%] !p-2 !px-6  h-full">{renderTabContent()}</div>

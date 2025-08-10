@@ -1,15 +1,13 @@
 "use client";
-import { getConditionOptions } from "@/shared/ConditionOptions";
-import { Button, Checkbox, Form, Input, Select } from "antd";
 import { getProductTypeOptions } from "@/api/product-type/product-type";
-import { getUserOption } from "@/api/user/user";
+import { getConditionOptions } from "@/shared/ConditionOptions";
+import { Checkbox, Form, Input, Select } from "antd";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const FilterFunction = ({ onFilterChange }) => {
   const [form] = Form.useForm();
   const [productTypeOptions, setProductTypeOptions] = useState([]);
-  const [userOptions, setUserOptions] = useState([]);
 
   useEffect(() => {
     const fetchProductTypeOptions = async () => {
@@ -17,12 +15,6 @@ const FilterFunction = ({ onFilterChange }) => {
       setProductTypeOptions(options);
     };
 
-    const fetchUserOptions = async () => {
-      const userOptions = await getUserOption();
-      setUserOptions(userOptions);
-    };
-
-    fetchUserOptions();
     fetchProductTypeOptions();
   }, []);
 
@@ -33,16 +25,19 @@ const FilterFunction = ({ onFilterChange }) => {
   };
 
   return (
+    // everytime user change the input, it will call onFilterChange
+    // this is to update the filter state in parent component
+    // and trigger the API call to fetch filtered data
     <Form form={form} onValuesChange={handleChange}>
       <div>
         {/* <div className="flex flex-col"> */}
         <div className="flex gap-4">
           <Form.Item name="name">
-            <Input placeholder="Search by name" />
+            <Input placeholder="Search by name..." />
           </Form.Item>
           <Form.Item name="condition" valuePropName="value">
             <Select
-              placeholder="Select condition"
+              placeholder="Select condition..."
               options={getConditionOptions()}
               allowClear
               mode="multiple"
@@ -54,7 +49,7 @@ const FilterFunction = ({ onFilterChange }) => {
           </Form.Item>
           <Form.Item name="product_type_id">
             <Select
-              placeholder="Select product type"
+              placeholder="Select product type..."
               options={productTypeOptions}
               allowClear
               onChange={(value) =>
@@ -69,15 +64,10 @@ const FilterFunction = ({ onFilterChange }) => {
           >
             <Checkbox
               onChange={(e) =>
-                onFilterChange(
-                  (prev) => (
-                    console.log("Checkbox changed:", e.target.checked),
-                    {
-                      ...prev,
-                      favorite: e.target.checked,
-                    }
-                  )
-                )
+                onFilterChange((prev) => ({
+                  ...prev,
+                  favorite: e.target.checked,
+                }))
               }
             >
               Show Favorite

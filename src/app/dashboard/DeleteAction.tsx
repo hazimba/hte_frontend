@@ -15,6 +15,8 @@ interface DeleteActionProps {
 const DeleteAction = ({ record, onDelete, tab }: DeleteActionProps) => {
   const handleDelete = async () => {
     try {
+      // straight delete not soft delete
+      // this is to delete the record from the database
       const response = await axios.delete(`${neondb_url}/${tab}/${record.id}`);
       if (response.status === 200) {
         onDelete(record.id);
