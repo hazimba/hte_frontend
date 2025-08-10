@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Live Demo Link : https://hte-frontend.vercel.app/
+
 ## Setup Instruction
 
 to run locally
@@ -12,7 +14,8 @@ HTE_backend
 HTE_FRONTEND
 
 1. Run npm install to install dependencies.
-2. Run npm run dev to start the frontend development server.
+2. config/url.ts to make sure url point to local
+3. Run npm run dev to start the frontend development server.
 
 ## Tech Stack Used
 
@@ -23,13 +26,28 @@ HTE_FRONTEND
 
 # Thought process and design decisions
 
-1. Backend is much easy than frontend
-2. Use of Next.js for the frontend, a monorepo structure would be ideal to better manage shared code and streamline development
+The design of application is a list of Seller to sell their preloved product,
+imagine the event of carboot sales, or thrift area where people sell their preloved,
+people who come at main door can have such a qr for this app (not yet implement as now the app is for seller),
+then can know immediaty what selling inside, in long run this app will have image of the product,
+location of the booth/ carboot, direct purchase, and bidding, other information such
+next event, promotion, weather, subscription, and to be a community that every person involve
+will have centralize app to manage
+
+1. I have not implemented ElasticSearch, so I need to optimize the app for better performance
+2. Backend is much easy than frontend, only couple hour to build the base in order to run frontend
+3. Use of Next.js for the frontend, a monorepo structure would be ideal as it fullstack framework
+4. This app may not have full CRUD for other table except products as app mainly focus on the products as below
+   - this include filter from product and favorite table
+   - create, edit, delete, update
+5. The app now full of testing data that I made through out the process of development
+6. The purchase button not work (but can work in future)
 
 # Any known issues or limitations
 
-1. Not fully utilize Next Framework, rushing, not thinking much
-2. 7 days more than enough to build something more but since got this assessment during UAT week, only start couple days ago
+1. Not much reference in youtube for ElasticSearch, need to skip this.
+2. Not fully utilize Next Framework, rushing, not thinking much
+3. 7 days more than enough to build something more but since got this assessment during UAT week, only start couple days ago
 
 ## Getting Started
 
