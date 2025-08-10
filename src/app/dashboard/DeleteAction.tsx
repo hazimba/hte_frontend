@@ -12,6 +12,12 @@ interface DeleteActionProps {
   onDelete: (id: string) => void;
 }
 
+// DeleteAction component to handle deletion of records
+// It uses a Popconfirm to confirm deletion and then calls the API to delete the record
+// If successful, it calls the onDelete callback with the record ID
+// This is a straight delete, not a soft delete
+// The record is deleted from the database directly
+// The tab prop is used to determine the endpoint for deletion
 const DeleteAction = ({ record, onDelete, tab }: DeleteActionProps) => {
   const handleDelete = async () => {
     try {

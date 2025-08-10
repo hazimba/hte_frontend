@@ -1,6 +1,9 @@
 import { neondb_url } from "@/config/neondb";
 import axios from "axios";
 
+// This file contains API calls related to favorites
+// It includes functions to update the favorite status of a product for a user and to fetch favorites
+// The functions use axios to make HTTP requests to the backend API endpoints defined in the neondb_url configuration
 export const updateFavoriteStatus = async (userId, productId) => {
   try {
     const response = await axios.post(`${neondb_url}/favorite/toggle`, {

@@ -16,6 +16,13 @@ interface TableRenderProps {
   userId?: string;
 }
 
+// TableRender component to render the product table
+// It fetches data based on the tab type (product or owner)
+// It handles the creation, updating, and viewing of products
+// It also manages the favorite status of products
+// The component uses various hooks to manage state and effects
+// It includes a filter function for the product tab to allow filtering products based on various criteria
+// The columns are generated dynamically based on the data and tab type
 const TableRender = ({ tab, userId }: TableRenderProps) => {
   // expect to have many const as this is shared component
   // but can be separate
@@ -28,7 +35,6 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
   const [loading, setLoading] = useState(false);
   // use for initial render, query from favorite table
   const [favorite, setFavorite] = useState([]);
-  console.log("favorite", favorite);
   const [filter, setFilter] = useState({});
   // use for debouncing filter input avoiding too many API calls
   const debouncedFilter = useDebounce(filter, 300);
@@ -91,6 +97,9 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
 
   return (
     <>
+      {/* Toggle action button to show or hide action columns */}
+      {/* This is only available for product and owner tabs */}
+      {/* For other tabs, it will not render anything */}
       {tab === "product" || tab === "owner" ? (
         <div
           className="flex justify-end cursor-pointer"

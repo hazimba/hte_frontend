@@ -2,6 +2,12 @@ import axios from "axios";
 import { neondb_url } from "@/config/neondb";
 import { filterProducts } from "@/api/product/product";
 
+// This function fetches data for the DataTable based on the provided tab and filter
+// It handles different tabs like "owner" for fetching products by user ID
+// and "product" for fetching products with specific filters
+// It returns the fetched data or throws an error if no data is found
+// The userId is used to fetch products owned by a specific user
+// The filter object is used to apply specific conditions when fetching products
 export const fetchDataTable = async (tab: string, filter, userId) => {
   // early return for unncessary api call
   if (tab === "owner") return [];

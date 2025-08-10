@@ -3,7 +3,7 @@ import { Products } from "@/types/types";
 import { Button, Modal, Spin, Tag } from "antd";
 import { fetchProductTypeById } from "@/api/product-type/product-type";
 import { fetchUserById } from "@/api/user/user";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import ToggleFavorite from "@/shared/ToggleFavorite";
 
 interface ViewActionProps {
@@ -11,9 +11,14 @@ interface ViewActionProps {
   openViewModal?: boolean;
   setOpenViewModal?: (open: boolean) => void;
   favorite?: { product_id: string; user_id: string }[];
-  setFavorite?: () => void;
+  setFavorite?: Dispatch<
+    SetStateAction<{ product_id: string; user_id: string }[]>
+  >;
 }
 
+// ModalView component to display product details
+// It fetches product type and user details based on the selected row
+// and allows toggling favorite status
 const ModalView = ({
   setOpenViewModal,
   openViewModal,

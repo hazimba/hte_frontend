@@ -1,6 +1,7 @@
 import axios from "axios";
 import { neondb_url } from "@/config/neondb";
 
+// This file contains API calls related to product types
 export const fetchProductTypes = async () => {
   const res = await axios.get(`${neondb_url}/productType`);
   return res.data;

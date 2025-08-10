@@ -5,6 +5,11 @@ import { Checkbox, Form, Input, Select } from "antd";
 
 import { useEffect, useState } from "react";
 
+// FilterFunction component to handle filtering of products
+// It provides input fields for searching by name, condition, product type, and a checkbox for showing favorites
+// It uses Ant Design's Form component to manage the form state
+// and calls onFilterChange whenever the input values change to update the filter state in the parent component
+// This will trigger the API call to fetch filtered data based on the user's input
 const FilterFunction = ({ onFilterChange }) => {
   const [form] = Form.useForm();
   const [productTypeOptions, setProductTypeOptions] = useState([]);
