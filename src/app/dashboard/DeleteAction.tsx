@@ -1,4 +1,4 @@
-import { neondb_url } from "@/config/neondb";
+import { url } from "@/config/url";
 import axios from "axios";
 import { Popconfirm } from "antd";
 
@@ -23,7 +23,7 @@ const DeleteAction = ({ record, onDelete, tab }: DeleteActionProps) => {
     try {
       // straight delete not soft delete
       // this is to delete the record from the database
-      const response = await axios.delete(`${neondb_url}/${tab}/${record.id}`);
+      const response = await axios.delete(`${url}/${tab}/${record.id}`);
       if (response.status === 200) {
         onDelete(record.id);
       } else {

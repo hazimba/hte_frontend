@@ -1,5 +1,36 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Setup Instruction
+
+to run locally
+
+HTE_backend
+
+1. Run npm install to install dependencies.
+2. Run npm run dev to start the backend server in development mode.
+
+HTE_FRONTEND
+
+1. Run npm install to install dependencies.
+2. Run npm run dev to start the frontend development server.
+
+## Tech Stack Used
+
+1. Frontend: NextJs
+2. Backend: NodeJs
+3. Database: PostgreSQL (neondb)
+4. Search: n/a
+
+# Thought process and design decisions
+
+1. Backend is much easy than frontend
+2. Use of Next.js for the frontend, a monorepo structure would be ideal to better manage shared code and streamline development
+
+# Any known issues or limitations
+
+1. Not fully utilize Next Framework, rushing, not thinking much
+2. 7 days more than enough to build something more but since got this assessment during UAT week, only start couple days ago
+
 ## Getting Started
 
 First, run the development server:

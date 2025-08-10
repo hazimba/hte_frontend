@@ -1,5 +1,5 @@
 import axios from "axios";
-import { neondb_url } from "@/config/neondb";
+import { url } from "@/config/url";
 import { filterProducts } from "@/api/product/product";
 
 // This function fetches data for the DataTable based on the provided tab and filter
@@ -35,7 +35,7 @@ export const fetchDataTable = async (tab: string, filter, userId) => {
     return res.data;
   } else {
     // for other tabs, we can directly fetch data
-    const res = await axios.get(`${neondb_url}/${tab}`);
+    const res = await axios.get(`${url}/${tab}`);
     if (!res.data) {
       throw new Error(`No data found for tab: ${tab}`);
     }
