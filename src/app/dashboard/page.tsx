@@ -1,34 +1,39 @@
 "use client";
 import { useUserLoggedInState } from "@/store/user";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
-import { Tabs } from "antd";
+import { Spin, Tabs } from "antd";
 import Link from "next/link";
 import TableRender from "./TableRender";
+import { useState } from "react";
 
 const Dashboard = () => {
   const user = useUserLoggedInState((state) => state.user);
+  const [activeKey, setActiveKey] = useState("products");
   const items = [
-    {
-      key: "products",
-      label: "Products",
-      children: <TableRender key="product" tab="product" />,
-    },
-    {
-      key: "product-types",
-      label: "Product Types",
-      children: <TableRender key="product_types" tab="productType" />,
-    },
-    {
-      key: "users",
-      label: "Users",
-      children: <TableRender key="users" tab="user" />,
-    },
-    {
-      key: "your-products",
-      label: "Your Products",
-      children: <TableRender key="owner" tab="owner" userId={user?.id} />,
-    },
+    { key: "products", label: "Products" },
+    { key: "product-types", label: "Product Types" },
+    { key: "users", label: "Users" },
+    { key: "your-products", label: "Your Products" },
   ];
+
+  const renderTabContent = () => {
+    switch (activeKey) {
+      case "products":
+        return <TableRender tab="product" userId={user.id} />;
+      case "product-types":
+        return <TableRender tab="productType" />;
+      case "users":
+        return <TableRender tab="user" />;
+      case "your-products":
+        return <TableRender tab="owner" userId={user.id} />;
+      default:
+        return null;
+    }
+  };
+
+  if (!user) {
+    <Spin className="!h-screen !w-screen" />;
+  }
 
   return (
     <div className="flex flex-col items-center !h-screen w-screen p-2 gap-2 bg-gray-200">
@@ -40,12 +45,14 @@ const Dashboard = () => {
         <UserOutlined />
       </div>
       <Tabs
-        style={{ height: "100%" }}
-        className="w-[100%] rounded !p-2 !px-6 border-1"
-        defaultActiveKey="your-products"
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        className="w-[100%] rounded"
         centered
+        destroyOnHidden={true} // still good to keep
         items={items}
       />
+      <div className="w-[100%] !p-2 !px-6  h-full">{renderTabContent()}</div>
     </div>
   );
 };

@@ -41,8 +41,6 @@ const CreateUpdateForm = ({
   }, [tab]);
 
   const handleCreate = async (value) => {
-    console.log("Creating record with values:", value);
-
     const postData = {
       ...value,
       user_id: user,
@@ -56,12 +54,19 @@ const CreateUpdateForm = ({
       };
 
       try {
-        console.log("Updating record with data:", editData);
         const res = await axios.patch(
           `${neondb_url}/product/${selectedRow.id}`,
           editData
         );
-        console.log("Update response:", res.data);
+        if (res.status === 200) {
+          setData((prevData) =>
+            prevData.map((item) =>
+              item.id === selectedRow.id ? { ...item, ...editData } : item
+            )
+          );
+        }
+        form.resetFields();
+        setOpenModal(false);
         setReloadTrigger((prev) => prev + 1);
       } catch (error) {
         console.error("Error updating record:", error);
@@ -87,8 +92,6 @@ const CreateUpdateForm = ({
   useEffect(() => {
     if (userId) {
       getProductByUserId(userId).then(setData).catch(console.error);
-    } else {
-      fetchDataTable(tab).then(setData).catch(console.error);
     }
   }, [userId, reloadTrigger, tab, setData]);
 

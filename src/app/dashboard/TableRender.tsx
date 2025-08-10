@@ -3,11 +3,14 @@ import { fetchDataTable } from "@/shared/DataTable";
 import { columns } from "@/shared/TableColumn";
 import { useActionState } from "@/store/action";
 import { Button, Table } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import FilterFunction from "./FilterFunction";
 import ModalCreateProduct from "./modal-product/Create";
 import ModalUpdate from "./modal-product/Update";
 import ModalView from "./modal-product/View";
+import { getFavoritesByUserId } from "@/api/favorite/favorite";
+import { debounce } from "lodash";
+import { useDebounce } from "@/shared/Debounce";
 
 interface TableRenderProps {
   tab: string;
@@ -21,26 +24,47 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState({
-    name: "",
-    condition: null,
-    product_type_id: [],
-    // favorite: false,
-  });
-
+  const [favorite, setFavorite] = useState([]);
+  const [filter, setFilter] = useState({});
+  const debouncedFilter = useDebounce(filter, 300);
   const toggleAction = useActionState((state) => state.toggleAction);
   const setToggleAction = useActionState((state) => state.setToggleAction);
-  console.log("tab:", tab);
+  const debouncedTab = useDebounce(tab, 300);
+  const [prevTab, setPrevTab] = useState(tab);
+
+  const fetchFavorites = useCallback(async () => {
+    if (userId || tab === "product") {
+      try {
+        const favorites = await getFavoritesByUserId(userId);
+        setFavorite(favorites);
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    }
+  }, [userId, tab]);
+
+  useEffect(() => {
+    setFilter({});
+  }, [tab]);
+
+  useEffect(() => {
+    fetchFavorites();
+  }, [fetchFavorites]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
-    setData([]);
+
+    if (prevTab !== debouncedTab) {
+      setData([]);
+      setPrevTab(debouncedTab);
+    }
 
     try {
       let result = [];
-      if (tab === "owner" && userId) {
+      if (debouncedTab === "owner" && userId) {
         result = await getProductByUserId(userId);
       } else {
-        result = await fetchDataTable(tab, filter);
+        result = await fetchDataTable(debouncedTab, debouncedFilter, userId);
       }
       setData(result);
     } catch (error) {
@@ -49,11 +73,11 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
     } finally {
       setLoading(false);
     }
-  }, [tab, userId, setData, filter]);
+  }, [debouncedTab, debouncedFilter, userId, prevTab]);
 
   useEffect(() => {
     fetchData();
-  }, [tab, userId, fetchData, filter]);
+  }, [fetchData]);
 
   const refetch = useCallback(() => {
     fetchData();
@@ -61,7 +85,6 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
 
   return (
     <>
-      <Button onClick={() => refetch()}>Refresh</Button>
       {tab === "product" || tab === "owner" ? (
         <div
           className="flex justify-end cursor-pointer"
@@ -74,7 +97,7 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
       )}
       {!toggleAction && (
         <span className="mr-4 flex justify-between">
-          {(tab === "product" || tab === "owner") && (
+          {tab === "product" && (
             <FilterFunction onFilterChange={(values) => setFilter(values)} />
           )}
           {tab === "owner" && (
@@ -88,36 +111,36 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
           )}
         </span>
       )}
-      {data.length > 0 ? (
-        <Table
-          key={tab}
-          loading={loading}
-          rowKey={"uuid"}
-          pagination={{ pageSize: toggleAction ? 8 : 5 }}
-          scroll={{ y: "calc(100vh - 200px)" }}
-          dataSource={data}
-          columns={columns(
-            data,
-            tab,
-            refetch,
-            setOpenEditModal,
-            setSelectedRow
-          )}
-          onRow={(record) => ({
-            onClick: () => {
-              setOpenViewModal(true);
-              setSelectedRow(record);
-            },
-          })}
-        />
-      ) : (
-        <div className="flex justify-center items-center">
-          <div>Data not available/ not found</div>
-        </div>
-      )}
+      <Table
+        key={tab}
+        loading={loading}
+        rowKey={"uuid"}
+        pagination={{ pageSize: toggleAction ? 8 : 5 }}
+        scroll={{ y: "calc(100vh - 200px)" }}
+        dataSource={data}
+        columns={columns(
+          data,
+          tab,
+          refetch,
+          setOpenEditModal,
+          setSelectedRow,
+          favorite,
+          userId,
+          setData,
+          setFavorite
+        )}
+        onRow={(record) => {
+          if (tab === "product" || tab === "owner") {
+            return {
+              onClick: () => {
+                setSelectedRow(record);
+                setOpenViewModal(true);
+              },
+            };
+          }
+        }}
+      />
       <ModalView
-        tab={tab}
-        setData={setData}
         selectedRow={selectedRow}
         openViewModal={openViewModal}
         setOpenViewModal={setOpenViewModal}

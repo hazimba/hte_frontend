@@ -8,8 +8,9 @@ export const fetchProducts = async () => {
 };
 
 export const fetchProductById = async (productId: number) => {
-  const res = await axios.get(`${neondb_url}/product/${productId}`);
-  console.log("Fetched product:", res.data);
+  const res = await axios.get(`${neondb_url}/product/`, {
+    params: { id: productId },
+  });
   return res.data;
 };
 
@@ -26,7 +27,6 @@ export const getProductByUserId = async (userId: string, filter = {}) => {
 export const deleteProductById = async (productId: number) => {
   try {
     const res = await axios.delete(`${neondb_url}/product/${productId}`);
-    console.log("Delete response:", res.data);
     return res.data;
   } catch (error) {
     console.error("Error deleting product:", error);

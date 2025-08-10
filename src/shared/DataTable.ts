@@ -1,30 +1,31 @@
 import axios from "axios";
 import { neondb_url } from "@/config/neondb";
 
-export const fetchDataTable = async (tab: string, filter = {}) => {
-  // Clean up the filter object for URL
-  const queryParams = new URLSearchParams();
-  console.log("Filter before cleanup:", filter);
-  Object.entries(filter).forEach(([key, value]) => {
-    if (value === null || value === "" || value === undefined) return;
-    if (Array.isArray(value)) {
-      value.forEach((v) => queryParams.append(key, v));
-    } else {
-      queryParams.append(key, String(value));
+export const fetchDataTable = async (tab: string, filter, userId) => {
+  if (tab === "owner") return [];
+  console.log("tab:", tab);
+  if (tab === "product") {
+    const postBody = {
+      user_id: userId,
+      condition: filter.condition || null,
+      product_type_id: filter.product_type_id || null,
+      favorite: filter.favorite || false,
+      name: filter.name || null,
+    };
+
+    const res = await axios.post(`${neondb_url}/product/filter`, postBody);
+
+    if (!res.data) {
+      throw new Error(
+        `No data found for tab: ${tab} with filter: ${JSON.stringify(filter)}`
+      );
     }
-  });
-  console.log("Filter after cleanup:", queryParams.toString());
-  const url = `${neondb_url}/${tab}?${queryParams.toString()}`;
-  console.log("Fetching data from URL:", url);
-
-  const res = await axios.get(url);
-  if (!res.data) {
-    throw new Error(`No data found for tab: ${tab}`);
+    return res.data;
+  } else {
+    const res = await axios.get(`${neondb_url}/${tab}`);
+    if (!res.data) {
+      throw new Error(`No data found for tab: ${tab}`);
+    }
+    return res.data;
   }
-  return res.data;
 };
-
-// export const fetchDataTable = async (tab: string, filter = {}) => {
-//   const res = await axios.get(`${neondb_url}/${tab}`);
-//   return res.data;
-// };

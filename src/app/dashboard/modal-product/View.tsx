@@ -6,12 +6,7 @@ import { fetchUserById } from "@/api/user/user";
 import { useEffect, useState } from "react";
 
 interface ViewActionProps {
-  tab: string;
-  setData: (data: Products[]) => void;
   selectedRow?: Products;
-  setOpenModal?: (open: boolean) => void;
-  openModal?: boolean;
-  isEdit?: boolean;
   openViewModal?: boolean;
   setOpenViewModal?: (open: boolean) => void;
 }
