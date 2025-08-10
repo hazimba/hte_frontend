@@ -1,5 +1,5 @@
 import { fetchProductByUserId } from "@/api/product/product";
-import { neondb_url } from "@/config/neondb";
+import { url } from "@/config/url";
 import { productInput } from "@/shared/ProductInput";
 import { useUserLoggedInState } from "@/store/user";
 import { Button, Form, Input, Modal, Select } from "antd";
@@ -65,7 +65,7 @@ const CreateUpdateForm = ({
 
       try {
         const res = await axios.patch(
-          `${neondb_url}/${tab}/${selectedRow.id}`,
+          `${url}/${tab}/${selectedRow.id}`,
           // pass the data that we want to update as a body
           editData
         );
@@ -85,7 +85,7 @@ const CreateUpdateForm = ({
       }
     } else {
       try {
-        const response = await axios.post(`${neondb_url}/${tab}`, {
+        const response = await axios.post(`${url}/${tab}`, {
           ...postData,
         });
         if (response.status === 201) {
