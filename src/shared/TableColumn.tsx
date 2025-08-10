@@ -1,12 +1,17 @@
 import { deleteProductById } from "@/api/product/product";
 import { Popconfirm, Switch } from "antd";
+import { updateFavoriteStatus } from "@/api/favorite/favorite";
 
 export const columns = (
   data,
   tab,
   refetch,
   setOpenEditModal,
-  setSelectedRow
+  setSelectedRow,
+  favorite,
+  userId,
+  setData,
+  setFavorite
 ) => {
   const excludedKeys = [
     "id",
@@ -43,22 +48,51 @@ export const columns = (
       };
     });
 
+  const handleToggleFavorite = async (record) => {
+    const productId = record.id;
+    const exists = favorite.some((fav) => fav.product_id === productId);
+
+    if (exists) {
+      setFavorite((prev) => prev.filter((fav) => fav.product_id !== productId));
+    } else {
+      setFavorite((prev) => [
+        ...prev,
+        { product_id: productId, user_id: userId },
+      ]);
+    }
+
+    try {
+      const res = await updateFavoriteStatus(userId, productId);
+
+      if (!res) {
+        console.error("Failed to update favorite status:", record);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
+
   if (tab === "product") {
     baseColumns.push({
       title: "Add to Favorites",
       key: "favorites",
       // @ts-expect-error: dynamic columns may not match Ant Design type
-      render: (_, record) => (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="flex justify-center"
-        >
-          <Switch
-            className="text-yellow-500 cursor-pointer"
-            onChange={(e) => console.log("Toggle favorite:", record, e)}
-          />
-        </div>
-      ),
+      render: (_, record) => {
+        const isFav =
+          favorite?.some((fav) => fav.product_id === record.id) || false;
+        return (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex justify-center"
+          >
+            <Switch
+              className="text-yellow-500 cursor-pointer"
+              onChange={() => handleToggleFavorite(record)}
+              checked={isFav}
+            />
+          </div>
+        );
+      },
     });
   }
 
@@ -66,7 +100,6 @@ export const columns = (
     const res = await deleteProductById(id);
     // const res = true;
     if (res) {
-      console.log("Product deleted successfully:", id);
       refetch();
     } else {
       console.error("Failed to delete product:", id);
@@ -74,7 +107,6 @@ export const columns = (
   };
 
   const handleEdit = (record) => {
-    console.log("Edit product:", record);
     setOpenEditModal(true);
     // Implement edit functionality here
   };

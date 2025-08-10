@@ -34,7 +34,7 @@ const FilterFunction = ({ onFilterChange }) => {
 
   return (
     <Form form={form} onValuesChange={handleChange}>
-      <div className="mb-4">
+      <div>
         {/* <div className="flex flex-col"> */}
         <div className="flex gap-4">
           <Form.Item name="name">
@@ -45,6 +45,8 @@ const FilterFunction = ({ onFilterChange }) => {
               placeholder="Select condition"
               options={getConditionOptions()}
               allowClear
+              mode="multiple"
+              style={{ minWidth: "200px", maxWidth: "400px" }}
               onChange={(value) =>
                 onFilterChange((prev) => ({ ...prev, condition: value }))
               }
@@ -55,43 +57,33 @@ const FilterFunction = ({ onFilterChange }) => {
               placeholder="Select product type"
               options={productTypeOptions}
               allowClear
-              mode="multiple"
-              style={{ minWidth: "200px", maxWidth: "400px" }}
               onChange={(value) =>
                 onFilterChange((prev) => ({ ...prev, product_type_id: value }))
               }
             />
           </Form.Item>
-          {/* <Form.Item
+          <Form.Item
             name="favorite"
             valuePropName="checked"
             initialValue={false}
           >
             <Checkbox
               onChange={(e) =>
-                onFilterChange((prev) => ({
-                  ...prev,
-                  favorite: e.target.checked,
-                }))
+                onFilterChange(
+                  (prev) => (
+                    console.log("Checkbox changed:", e.target.checked),
+                    {
+                      ...prev,
+                      favorite: e.target.checked,
+                    }
+                  )
+                )
               }
-            />
-          </Form.Item> */}
+            >
+              Show Favorite
+            </Checkbox>
+          </Form.Item>
         </div>
-        {/* <div className="flex justify-between">
-            <Form.Item name="user_id">
-              <Select
-                placeholder="Select owner"
-                options={userOptions}
-                mode="multiple"
-                style={{ width: "530px" }}
-                onChange={(value) => console.log("Selected users:", value)}
-              />
-            </Form.Item>
-          </div> */}
-        {/* </div> */}
-        <Button type="primary" htmlType="submit" className="">
-          Filter
-        </Button>
       </div>
     </Form>
   );

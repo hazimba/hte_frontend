@@ -16,7 +16,6 @@ const DeleteAction = ({ record, onDelete, tab }: DeleteActionProps) => {
   const handleDelete = async () => {
     try {
       const response = await axios.delete(`${neondb_url}/${tab}/${record.id}`);
-      console.log("Delete response:", response);
       if (response.status === 200) {
         onDelete(record.id);
       } else {
