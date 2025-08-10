@@ -1,6 +1,10 @@
 import { updateFavoriteStatus } from "@/api/favorite/favorite";
 import { Switch } from "antd";
 
+// ToggleFavorite component to handle favorite status toggling
+// It checks if the product is already favorited by the user
+// If it is, it removes it from favorites; if not, it adds it to favorites
+// It uses the updateFavoriteStatus API to update the favorite status in the backend
 const ToggleFavorite = ({
   record,
   setFavorite,
@@ -18,7 +22,7 @@ const ToggleFavorite = ({
     // this only for UI update
     // if exist, remove it from favorite array
     // for pre render
-    if (exists && !isView) {
+    if (exists) {
       setFavorite((prev) => prev.filter((fav) => fav.product_id !== productId));
     } else {
       // if not exist, add it to favorite array

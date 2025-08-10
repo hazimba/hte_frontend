@@ -10,6 +10,11 @@ interface UpdateActionProps {
   isUpdate?: boolean;
   userId: string;
 }
+
+// ModalUpdate component to handle product updates
+// It uses ModalCreateUpdate to create or update a product
+// If selectedRow is passed, it will update the product; otherwise, it will create a new product
+// isUpdate is used to determine if the modal is for create or update
 const ModalUpdate = ({
   tab,
   setData,

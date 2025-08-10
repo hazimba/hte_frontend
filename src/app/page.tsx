@@ -6,6 +6,10 @@ import { DefaultOptionType } from "antd/es/select";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Home component to render the initial page
+// It allows the user to select their role (e.g., Admin, User) before proceeding
+// The selected role is stored in the user state using Zustand
+// Once a role is selected, the user can proceed to the dashboard
 export default function Home() {
   const setUser = useUserLoggedInState((state) => state.setUser);
   const [userOption, setUserOption] = useState([]);

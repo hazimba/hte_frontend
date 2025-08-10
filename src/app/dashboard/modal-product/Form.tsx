@@ -6,6 +6,10 @@ import { Button, Form, Input, Modal, Select } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+// CreateUpdateForm component to handle both creating and updating products
+// It uses the same form for both actions
+// The form fields are dynamically generated based on the productInput configuration
+// It fetches the product data if updating, and posts new data if creating
 const CreateUpdateForm = ({
   tab,
   setData,

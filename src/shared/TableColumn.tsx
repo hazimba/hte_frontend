@@ -1,6 +1,5 @@
-import { updateFavoriteStatus } from "@/api/favorite/favorite";
 import { deleteProductById } from "@/api/product/product";
-import { Popconfirm, Switch } from "antd";
+import { Popconfirm } from "antd";
 import ToggleFavorite from "./ToggleFavorite";
 
 // shared function to generate table columns based on data and tab type

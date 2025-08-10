@@ -6,6 +6,10 @@ import Link from "next/link";
 import { useState } from "react";
 import TableRender from "./TableRender";
 
+// Dashboard component to render the main dashboard view
+// It includes a header with user information and a tabbed interface for different sections
+// The tabs include Products, Product Types, Users, and Your Products
+// Each tab renders a TableRender component with the appropriate tab and userId props
 const Dashboard = () => {
   const user = useUserLoggedInState((state) => state.user);
   const [activeKey, setActiveKey] = useState("your-products");

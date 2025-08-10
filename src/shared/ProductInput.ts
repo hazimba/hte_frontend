@@ -2,6 +2,8 @@ import { getConditionOptions } from "./ConditionOptions";
 import { getProductTypeOptions } from "../api/product-type/product-type";
 
 // Input to create a product
+// This function fetches product type options and condition options
+// and returns an array of field configurations for the product input form
 export const productInput = async () => {
   // Fetch product type options and condition options from respective APIs
   const productTypeOptions = await getProductTypeOptions();

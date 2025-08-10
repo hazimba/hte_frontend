@@ -1,7 +1,9 @@
 import { neondb_url } from "@/config/neondb";
-
 import axios from "axios";
 
+// This file contains API calls related to products
+// It includes functions to fetch all products, fetch a product by ID, fetch products by user ID, delete a product by ID, and filter products based on various criteria
+// The functions use axios to make HTTP requests to the backend API endpoints defined in the neondb_url configuration
 export const fetchProducts = async () => {
   const res = await axios.get(`${neondb_url}/product`);
   return res.data;
