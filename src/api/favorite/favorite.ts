@@ -16,8 +16,12 @@ export const updateFavoriteStatus = async (userId, productId) => {
 
 export const getFavoritesByUserId = async (userId) => {
   try {
+    // Fetch favorites for a specific user
+    if (!userId) {
+      throw new Error("User ID is required to fetch favorites.");
+    }
     const response = await axios.get(`${neondb_url}/favorite/user/${userId}`);
-    console.log("Fetched favorites for user ID:", userId, response.data);
+
     if (!response.data) {
       throw new Error(`No favorites found for user ID: ${userId}`);
     }

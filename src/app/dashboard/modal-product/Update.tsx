@@ -7,7 +7,7 @@ interface UpdateActionProps {
   selectedRow?: Products;
   setOpenModal?: (open: boolean) => void;
   openModal?: boolean;
-  isEdit?: boolean;
+  isUpdate?: boolean;
   userId: string;
 }
 const ModalUpdate = ({
@@ -17,10 +17,14 @@ const ModalUpdate = ({
   setOpenModal,
   openModal,
   userId,
-  isEdit,
+  isUpdate,
 }: UpdateActionProps) => {
   return (
     <div className="pt-2">
+      {/* ModalCreateUpdate is used to create or update a product */}
+      {/* if selectedRow is passed, it will be used to update the product */}
+      {/* if not, it will create a new product */}
+      {/* isUpdate is used to determine if the modal is for create or update */}
       <ModalCreateUpdate
         tab={tab}
         setData={setData}
@@ -28,7 +32,7 @@ const ModalUpdate = ({
         setOpenModal={setOpenModal}
         openModal={openModal}
         userId={userId}
-        isEdit={isEdit}
+        isUpdate={isUpdate}
       />
     </div>
   );

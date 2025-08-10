@@ -13,6 +13,8 @@ export const fetchProductTypeById = async (productTypeId: number) => {
 
 export const getProductTypeOptions = async () => {
   const productTypes = await fetchProductTypes();
+  // map product types to options for select input
+  // this is used in create and edit product form
   return productTypes.map((type) => ({
     label: type.name,
     value: type.id,

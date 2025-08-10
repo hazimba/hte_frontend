@@ -1,11 +1,10 @@
-import { getProductByUserId } from "@/api/product/product";
+import { fetchProductByUserId } from "@/api/product/product";
 import { neondb_url } from "@/config/neondb";
-import { fetchDataTable } from "@/shared/DataTable";
 import { productInput } from "@/shared/ProductInput";
 import { useUserLoggedInState } from "@/store/user";
 import { Button, Form, Input, Modal, Select } from "antd";
 import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const CreateUpdateForm = ({
   tab,
@@ -14,8 +13,10 @@ const CreateUpdateForm = ({
   setOpenModal,
   openModal,
   userId,
-  isEdit,
+  isUpdate,
 }) => {
+  // this component handles both creating and updating products
+  // it uses the same form for both actions
   const [form] = Form.useForm();
   const [fields, setFields] = useState([]);
   const user = useUserLoggedInState((state) => state.user?.id);
@@ -23,6 +24,8 @@ const CreateUpdateForm = ({
 
   useEffect(() => {
     if (selectedRow) {
+      // here to automatically fill the form with selected row data when updateModal is opened
+      // if selectedRow is provided, it means we are updating an existing product
       form.setFieldsValue(selectedRow);
     } else {
       form.resetFields();
@@ -40,14 +43,17 @@ const CreateUpdateForm = ({
     }
   }, [tab]);
 
-  const handleCreate = async (value) => {
+  // handle form submission for both create and update actions
+  // above if to update the product while below else to create a new product
+  const handleCreateUpdate = async (value) => {
     const postData = {
       ...value,
       user_id: user,
+      // is_sold always false when creating a new product
       is_sold: false,
     };
 
-    if (isEdit && selectedRow) {
+    if (isUpdate && selectedRow) {
       const editData = {
         ...postData,
         id: selectedRow.id,
@@ -55,10 +61,12 @@ const CreateUpdateForm = ({
 
       try {
         const res = await axios.patch(
-          `${neondb_url}/product/${selectedRow.id}`,
+          `${neondb_url}/${tab}/${selectedRow.id}`,
+          // pass the data that we want to update as a body
           editData
         );
         if (res.status === 200) {
+          // update the table data with the updated record
           setData((prevData) =>
             prevData.map((item) =>
               item.id === selectedRow.id ? { ...item, ...editData } : item
@@ -76,7 +84,6 @@ const CreateUpdateForm = ({
         const response = await axios.post(`${neondb_url}/${tab}`, {
           ...postData,
         });
-        console.log("Create response:", response);
         if (response.status === 201) {
           setData((prevData) => [...prevData, response.data]);
           setReloadTrigger((prev) => prev + 1);
@@ -90,14 +97,24 @@ const CreateUpdateForm = ({
   };
 
   useEffect(() => {
-    if (userId) {
-      getProductByUserId(userId).then(setData).catch(console.error);
+    // when view modal to not triggered to call the api
+    // when create successfully, table data will be updated
+    if (userId && !isUpdate) {
+      const fetchProducts = async () => {
+        try {
+          const products = await fetchProductByUserId(userId);
+          setData(products);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
+      fetchProducts();
     }
-  }, [userId, reloadTrigger, tab, setData]);
+  }, [userId, reloadTrigger, tab, setData, isUpdate]);
 
   return (
     <Modal
-      title={isEdit ? `Update ${tab}` : `Create ${tab}`}
+      title={isUpdate ? `Update ${tab}` : `Create ${tab}`}
       open={openModal}
       onCancel={() => setOpenModal(false)}
       footer={null}
@@ -108,13 +125,14 @@ const CreateUpdateForm = ({
         layout="vertical"
         name="create_form"
         onFinish={(value) => {
-          handleCreate(value);
+          handleCreateUpdate(value);
           setOpenModal(false);
         }}
         initialValues={{ condition: "New" }}
       >
         {tab === "product" && (
           <>
+            {/* fields declare hardcoded from ProductInput */}
             {fields.map((field) => (
               <Form.Item
                 key={field.name}
@@ -129,7 +147,7 @@ const CreateUpdateForm = ({
               </Form.Item>
             ))}
             <Button type="primary" htmlType="submit" className="w-full">
-              {isEdit ? "Update" : "Create"}
+              {isUpdate ? "Update" : "Create"}
             </Button>
           </>
         )}

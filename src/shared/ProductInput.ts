@@ -1,12 +1,15 @@
 import { getConditionOptions } from "./ConditionOptions";
 import { getProductTypeOptions } from "../api/product-type/product-type";
 
+// Input to create a product
 export const productInput = async () => {
+  // Fetch product type options and condition options from respective APIs
   const productTypeOptions = await getProductTypeOptions();
   const conditionOptions = getConditionOptions();
 
   return [
     {
+      // the name key is used to bind the form input
       name: "name",
       key: "name",
       label: "Name",

@@ -9,11 +9,11 @@ interface TabState {
 export const useTabStore = create<TabState>()(
   persist(
     (set) => ({
-      tab: "owner", // Default tab
+      tab: "your-products", // default tab
       setTab: (tab) => set({ tab }),
     }),
     {
-      name: "tab-storage", // unique name for the storage
+      name: "tab-storage",
     }
   )
 );

@@ -1,8 +1,6 @@
 import { Products } from "@/types/types";
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import ModalCreateUpdate from "./Form";
 import { Button } from "antd";
+import ModalCreateUpdate from "./Form";
 
 interface CreateActionProps {
   tab: string;
@@ -10,10 +8,11 @@ interface CreateActionProps {
   setOpenModal: (open: boolean) => void;
   openModal: boolean;
   selectedRow?: Products;
-  isEdit?: boolean;
+  isUpdate?: boolean;
   userId?: string;
 }
 
+// This component is used to create a new product
 const CreateAction = ({
   tab,
   setData,
@@ -25,6 +24,10 @@ const CreateAction = ({
   return (
     <div className="pt-2 w-full mb-4">
       <Button onClick={() => setOpenModal(true)}>Add New Product</Button>
+      {/* ModalCreateUpdate is used to create or update a product */}
+      {/* if selectedRow is passed, it will be used to update the product */}
+      {/* if not, it will create a new product */}
+      {/* isUpdate is used to determine if the modal is for create or update */}
       <ModalCreateUpdate
         tab={tab}
         setData={setData}
@@ -32,7 +35,7 @@ const CreateAction = ({
         setOpenModal={setOpenModal}
         openModal={openModal}
         userId={userId}
-        isEdit={false}
+        isUpdate={false}
       />
     </div>
   );

@@ -1,7 +1,10 @@
+import { updateFavoriteStatus } from "@/api/favorite/favorite";
 import { deleteProductById } from "@/api/product/product";
 import { Popconfirm, Switch } from "antd";
-import { updateFavoriteStatus } from "@/api/favorite/favorite";
+import ToggleFavorite from "./ToggleFavorite";
 
+// shared function to generate table columns based on data and tab type
+// is used to show products from user and all products
 export const columns = (
   data,
   tab,
@@ -22,9 +25,12 @@ export const columns = (
     "user_id",
   ];
 
+  // to exclude key from product table
   if (tab !== "owner") {
     excludedKeys.push("is_sold");
   }
+
+  // all columns is mapped and generated dynamically here
   const baseColumns = Object.keys(data[0] || {})
     .filter((key) => !excludedKeys.includes(key))
     .map((key) => {
@@ -33,8 +39,12 @@ export const columns = (
           title: key.replace(/_/g, " ").toUpperCase(),
           dataIndex: key,
           key,
+          sort: (a, b) => a[key] - b[key],
           render: (text) => (
-            <span className={text ? "text-red-500" : "text-green-500"}>
+            <span
+              key={key}
+              className={text ? "text-red-500" : "text-green-500"}
+            >
               {text ? "Sold" : "Available"}
             </span>
           ),
@@ -48,49 +58,20 @@ export const columns = (
       };
     });
 
-  const handleToggleFavorite = async (record) => {
-    const productId = record.id;
-    const exists = favorite.some((fav) => fav.product_id === productId);
-
-    if (exists) {
-      setFavorite((prev) => prev.filter((fav) => fav.product_id !== productId));
-    } else {
-      setFavorite((prev) => [
-        ...prev,
-        { product_id: productId, user_id: userId },
-      ]);
-    }
-
-    try {
-      const res = await updateFavoriteStatus(userId, productId);
-
-      if (!res) {
-        console.error("Failed to update favorite status:", record);
-      }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-    }
-  };
-
+  // toggle action is only available for product tab
   if (tab === "product") {
     baseColumns.push({
       title: "Add to Favorites",
       key: "favorites",
       // @ts-expect-error: dynamic columns may not match Ant Design type
       render: (_, record) => {
-        const isFav =
-          favorite?.some((fav) => fav.product_id === record.id) || false;
         return (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex justify-center"
-          >
-            <Switch
-              className="text-yellow-500 cursor-pointer"
-              onChange={() => handleToggleFavorite(record)}
-              checked={isFav}
-            />
-          </div>
+          <ToggleFavorite
+            setFavorite={setFavorite}
+            userId={userId}
+            favorite={favorite}
+            record={record}
+          />
         );
       },
     });
@@ -106,11 +87,7 @@ export const columns = (
     }
   };
 
-  const handleEdit = (record) => {
-    setOpenEditModal(true);
-    // Implement edit functionality here
-  };
-
+  // only owner can edit and delete their own products
   if (tab === "owner") {
     baseColumns.push({
       title: "ACTIONS",
@@ -121,8 +98,10 @@ export const columns = (
           <span
             className="text-blue-500 cursor-pointer"
             onClick={(e) => {
+              // prevent event bubbling
               e.stopPropagation();
-              handleEdit(record);
+              // this is openModal and pass the selected row value to OpenEditModal
+              setOpenEditModal(true);
               setSelectedRow(record);
             }}
           >

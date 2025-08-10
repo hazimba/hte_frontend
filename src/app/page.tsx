@@ -1,33 +1,27 @@
 "use client";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Select } from "antd";
-import { neondb_url } from "@/config/neondb";
-import axios from "axios";
+import { getUserOption } from "@/api/user/user";
 import { useUserLoggedInState } from "@/store/user";
+import { Select } from "antd";
 import { DefaultOptionType } from "antd/es/select";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const setUser = useUserLoggedInState((state) => state.setUser);
-  const [userData, setUserData] = useState([]);
+  const [userOption, setUserOption] = useState([]);
   const [onchange, setOnchange] = useState(false);
 
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await axios.get(`${neondb_url}/user`);
-        setUserData(response.data);
+        const response = await getUserOption();
+        setUserOption(response);
       };
       fetchData();
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }, []);
-
-  const options = userData.map((user) => ({
-    value: user.id,
-    label: user.name,
-  }));
 
   return (
     <div className="font-sans grid items-center justify-items-center min-h-screen gap-16 sm:p-20">
@@ -43,7 +37,7 @@ export default function Home() {
               setUser({ id: String(value), name: String(data.label) });
               setOnchange(true);
             }}
-            options={options}
+            options={userOption}
           />
         </div>
       </div>
