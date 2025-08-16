@@ -27,6 +27,7 @@ export const columns = (
   // to exclude key from product table
   if (tab !== "owner") {
     excludedKeys.push("is_sold");
+    // excludedKeys.push("change_role_request");
   }
 
   // all columns is mapped and generated dynamically here
@@ -47,6 +48,31 @@ export const columns = (
               {text ? "Sold" : "Available"}
             </span>
           ),
+        };
+      }
+
+      if (key === "change_role_request") {
+        return {
+          title: "Change Role Request",
+          dataIndex: key,
+          key,
+          render: (text) => (
+            <span className={text ? "text-blue-500" : "text-gray-500"}>
+              {/* todo: action button to approve */}
+              {/* update the user row  */}
+              {text ? "Requested" : "Not Requested"}
+            </span>
+          ),
+        };
+      }
+
+      if (key === "role") {
+        return {
+          title: "Role",
+          dataIndex: key,
+          key,
+          sort: (a, b) => a[key].localeCompare(b[key]),
+          render: (text) => text.charAt(0).toUpperCase() + text.slice(1),
         };
       }
 
@@ -87,7 +113,7 @@ export const columns = (
   };
 
   // only owner can edit and delete their own products
-  if (tab === "owner") {
+  if (tab === "owner" && data.length > 0) {
     baseColumns.push({
       title: "ACTIONS",
       key: "actions",

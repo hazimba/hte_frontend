@@ -3,7 +3,7 @@ import { useUserLoggedInState } from "@/store/user";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
 import { Tabs } from "antd";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TableRender from "./TableRender";
 
 // Dashboard component to render the main dashboard view
@@ -12,27 +12,26 @@ import TableRender from "./TableRender";
 // Each tab renders a TableRender component with the appropriate tab and userId props
 const Dashboard = () => {
   const user = useUserLoggedInState((state) => state.user);
-  const [activeKey, setActiveKey] = useState("your-products");
+  const [activeKey, setActiveKey] = useState("owner");
   const items = [
-    { key: "products", label: "Products" },
-    { key: "product-types", label: "Product Types" },
-    { key: "users", label: "Users" },
-    { key: "your-products", label: "Your Products" },
+    { key: "product", label: "Products" },
+    // { key: "product-types", label: "Product Types" },
+    { key: "user", label: "Users" },
+    { key: "owner", label: "Your Products" },
   ];
-
   // table display is shared component
   // so we can use the same component for all tabs
   // userId is pass for action state
   const renderTabContent = () => {
     switch (activeKey) {
-      case "products":
-        return <TableRender tab="product" userId={user?.id} />;
-      case "product-types":
-        return <TableRender tab="productType" />;
-      case "users":
-        return <TableRender tab="user" />;
-      case "your-products":
-        return <TableRender tab="owner" userId={user?.id} />;
+      case "product":
+        return <TableRender tab={activeKey} userId={user?.id} />;
+      // case "product-types":
+      //   return <TableRender tab="productType" />;
+      case "user":
+        return <TableRender tab={activeKey} />;
+      case "owner":
+        return <TableRender tab={activeKey} userId={user?.id} />;
       default:
         return null;
     }

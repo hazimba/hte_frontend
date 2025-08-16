@@ -40,8 +40,7 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
   const debouncedFilter = useDebounce(filter, 300);
   const toggleAction = useActionState((state) => state.toggleAction);
   const setToggleAction = useActionState((state) => state.setToggleAction);
-  const debouncedTab = useDebounce(tab, 300);
-  const [prevTab, setPrevTab] = useState(tab);
+  const debouncedTab = useDebounce(tab, 50);
 
   const fetchFavorites = useCallback(async () => {
     if (userId && tab === "product") {
@@ -55,28 +54,22 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
   }, [userId, tab]);
 
   useEffect(() => {
-    setFilter({});
-  }, [tab]);
-
-  useEffect(() => {
     fetchFavorites();
   }, [fetchFavorites]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
 
-    if (prevTab !== debouncedTab) {
-      setData([]);
-      setPrevTab(debouncedTab);
-    }
-
     try {
       let result = [];
       if (debouncedTab === "owner" && userId) {
         result = await fetchProductByUserId(userId);
-      } else {
+      } else if (debouncedTab === "product" && tab === "product") {
         // tab is pass to identify which table to fetch
         result = await fetchDataTable(debouncedTab, debouncedFilter, userId);
+      } else if (debouncedTab === "user" && tab === "user") {
+        // to make it strict, if not when click other tab it will called the previous tab also making api call longer
+        result = await fetchDataTable(debouncedTab, {}, userId);
       }
       setData(result);
     } catch (error) {
@@ -85,7 +78,7 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
     } finally {
       setLoading(false);
     }
-  }, [debouncedTab, debouncedFilter, userId, prevTab]);
+  }, [debouncedTab, debouncedFilter, userId, tab]);
 
   useEffect(() => {
     fetchData();
@@ -134,6 +127,7 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
         pagination={{ pageSize: toggleAction ? 8 : 5 }}
         scroll={{ y: "calc(100vh - 200px)" }}
         dataSource={data}
+        locale={{ emptyText: "No data available, please add a product" }}
         columns={columns(
           data,
           tab,

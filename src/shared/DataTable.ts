@@ -13,7 +13,7 @@ export const fetchDataTable = async (tab: string, filter, userId) => {
   if (tab === "owner") return [];
 
   // if statment specific for product tab action filter
-  if (tab === "product") {
+  if (tab === "product" && filter && Object.keys(filter).length > 0) {
     const postBody = {
       user_id: userId,
       condition: filter.condition || null,
