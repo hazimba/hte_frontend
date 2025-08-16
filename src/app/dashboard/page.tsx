@@ -2,9 +2,11 @@
 import { useUserLoggedInState } from "@/store/user";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
 import { Tabs } from "antd";
+import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import TableRender from "./TableRender";
+import { url } from "@/config/url";
 
 // Dashboard component to render the main dashboard view
 // It includes a header with user information and a tabbed interface for different sections
@@ -12,11 +14,23 @@ import TableRender from "./TableRender";
 // Each tab renders a TableRender component with the appropriate tab and userId props
 const Dashboard = () => {
   const user = useUserLoggedInState((state) => state.user);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await axios.get(`${url}/user/${user?.id}`);
+      if (userData) {
+        setIsAdmin(userData.data.role === "admin");
+      }
+    };
+    fetchUser();
+  }, [user?.id]);
+
   const [activeKey, setActiveKey] = useState("owner");
   const items = [
     { key: "product", label: "Products" },
-    // { key: "product-types", label: "Product Types" },
-    { key: "user", label: "Users" },
+    ...(isAdmin ? [{ key: "productType", label: "Product Types" }] : []),
+    ...(isAdmin ? [{ key: "user", label: "Users" }] : []),
     { key: "owner", label: "Your Products" },
   ];
   // table display is shared component
@@ -26,8 +40,8 @@ const Dashboard = () => {
     switch (activeKey) {
       case "product":
         return <TableRender tab={activeKey} userId={user?.id} />;
-      // case "product-types":
-      //   return <TableRender tab="productType" />;
+      case "productType":
+        return <TableRender tab={activeKey} />;
       case "user":
         return <TableRender tab={activeKey} />;
       case "owner":

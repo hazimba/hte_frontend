@@ -64,12 +64,14 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
       let result = [];
       if (debouncedTab === "owner" && userId) {
         result = await fetchProductByUserId(userId);
-      } else if (debouncedTab === "product" && tab === "product") {
+      } else if (tab === "product" && debouncedTab === "product") {
         // tab is pass to identify which table to fetch
         result = await fetchDataTable(debouncedTab, debouncedFilter, userId);
       } else if (debouncedTab === "user" && tab === "user") {
         // to make it strict, if not when click other tab it will called the previous tab also making api call longer
         result = await fetchDataTable(debouncedTab, {}, userId);
+      } else if (tab === "productType") {
+        result = await fetchDataTable(debouncedTab, {}, debouncedFilter);
       }
       setData(result);
     } catch (error) {
