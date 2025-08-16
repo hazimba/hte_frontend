@@ -9,16 +9,42 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [x: string]: JsonValue | undefined;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
+
 export type Numeric = ColumnType<string, number | string, number | string>;
 
-export type ProductCondition =
-  | "Damaged"
-  | "New"
-  | "Used - Fair"
-  | "Used - Like New"
-  | "Used - Old";
+export type ProductCondition = "Damaged" | "New" | "Used - Fair" | "Used - Like New" | "Used - Old";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export type UserRole = "admin" | "seller" | "user";
+
+export interface Favorite {
+  created_at: Generated<Timestamp | null>;
+  id: Generated<number>;
+  product_id: number;
+  user_id: number;
+}
+
+export interface NeonAuthUsersSync {
+  created_at: Generated<Timestamp | null>;
+  deleted_at: Timestamp | null;
+  email: Generated<string | null>;
+  id: Generated<string>;
+  name: Generated<string | null>;
+  raw_json: Json;
+  updated_at: Timestamp | null;
+}
 
 export interface Products {
   condition: ProductCondition;
@@ -46,9 +72,12 @@ export interface Users {
   id: Generated<number>;
   name: string;
   phone: string | null;
+  role: Generated<UserRole>;
 }
 
 export interface DB {
+  favorite: Favorite;
+  "neon_auth.users_sync": NeonAuthUsersSync;
   product_types: ProductTypes;
   products: Products;
   users: Users;

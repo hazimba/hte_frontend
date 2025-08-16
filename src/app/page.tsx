@@ -29,7 +29,11 @@ export default function Home() {
 
   return (
     <div className="font-sans grid items-center justify-items-center min-h-screen gap-16 sm:p-20">
-      <div className="flex items-center justify-center"></div>
+      <div className="flex justify-end w-full">
+        <Link href="/sign-up" className="text-blue-500 hover:underline">
+          Sign Up
+        </Link>
+      </div>
       <div className="text-center flex flex-col gap-36 items-center justify-center">
         <div className="text-4xl font-bold ">Welcome to Preloved App</div>
         <div>
