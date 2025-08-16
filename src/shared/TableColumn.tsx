@@ -1,6 +1,8 @@
 import { deleteProductById } from "@/api/product/product";
-import { Popconfirm } from "antd";
+import { Button, Popconfirm } from "antd";
 import ToggleFavorite from "./ToggleFavorite";
+import axios from "axios";
+import { url } from "@/config/url";
 
 // shared function to generate table columns based on data and tab type
 // is used to show products from user and all products
@@ -51,18 +53,54 @@ export const columns = (
         };
       }
 
+      const changeSellerRole = async (data) => {
+        console.log(data);
+
+        try {
+          const response = await axios.patch(`${url}/user/${data.id}`, {
+            ...data,
+            role: "seller",
+          });
+          console.log("Change role request response:", response.data);
+        } catch (error) {
+          console.error("Error changing role request:", error);
+        }
+        refetch();
+        setData((prevData) =>
+          prevData.map((item) =>
+            item.id === data.id
+              ? { ...item, change_role_request: !data.change_role_request }
+              : item
+          )
+        );
+      };
+
       if (key === "change_role_request") {
         return {
           title: "Change Role Request",
           dataIndex: key,
           key,
-          render: (text) => (
-            <span className={text ? "text-blue-500" : "text-gray-500"}>
-              {/* todo: action button to approve */}
-              {/* update the user row  */}
-              {text ? "Requested" : "Not Requested"}
-            </span>
-          ),
+          render: (changeStatusRequest, data) => {
+            return (
+              <span
+                className={
+                  changeStatusRequest ? "text-blue-500" : "text-gray-500"
+                }
+              >
+                {changeStatusRequest && data.role === "user" ? (
+                  <>
+                    <Button onClick={() => changeSellerRole(data)}>
+                      Requsted
+                    </Button>
+                  </>
+                ) : changeStatusRequest && data.role === "seller" ? (
+                  <>Changed Already</>
+                ) : (
+                  <>Not Request</>
+                )}
+              </span>
+            );
+          },
         };
       }
 
@@ -88,7 +126,7 @@ export const columns = (
     baseColumns.push({
       title: "Add to Favorites",
       key: "favorites",
-      // @ts-expect-error: dynamic columns may not match Ant Design type
+      dataIndex: "favorites",
       render: (_, record) => {
         return (
           <ToggleFavorite
@@ -117,7 +155,7 @@ export const columns = (
     baseColumns.push({
       title: "ACTIONS",
       key: "actions",
-      // @ts-expect-error: dynamic columns may not match Ant Design type
+      dataIndex: "actions",
       render: (_, record) => (
         <div className="flex gap-2">
           <span
