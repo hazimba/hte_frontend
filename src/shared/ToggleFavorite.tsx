@@ -5,13 +5,7 @@ import { Switch } from "antd";
 // It checks if the product is already favorited by the user
 // If it is, it removes it from favorites; if not, it adds it to favorites
 // It uses the updateFavoriteStatus API to update the favorite status in the backend
-const ToggleFavorite = ({
-  record,
-  setFavorite,
-  favorite,
-  userId,
-  isView = false,
-}) => {
+const ToggleFavorite = ({ record, setFavorite, favorite, userId }) => {
   const handleToggleFavorite = async (record) => {
     // extract individual product id
     const productId = record.id;

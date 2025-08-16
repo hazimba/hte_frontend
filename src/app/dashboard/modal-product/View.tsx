@@ -113,7 +113,6 @@ const ModalView = ({
               Add Fav
               <ToggleFavorite
                 userId={selectedRow?.user_id}
-                isView={true}
                 record={selectedRow}
                 favorite={favorite}
                 setFavorite={setFavorite}

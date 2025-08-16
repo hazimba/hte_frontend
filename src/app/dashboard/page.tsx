@@ -39,13 +39,13 @@ const Dashboard = () => {
   const renderTabContent = () => {
     switch (activeKey) {
       case "product":
-        return <TableRender tab={activeKey} userId={user.id} />;
+        return <TableRender tab={activeKey} userId={user?.id} />;
       case "productType":
         return <TableRender tab={activeKey} />;
       case "user":
         return <TableRender tab={activeKey} />;
       case "owner":
-        return <TableRender tab={activeKey} userId={user.id} />;
+        return <TableRender tab={activeKey} userId={user?.id} />;
       default:
         return null;
     }
