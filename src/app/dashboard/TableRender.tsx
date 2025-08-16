@@ -4,7 +4,7 @@ import { fetchDataTable } from "@/shared/DataTable";
 import { useDebounce } from "@/shared/Debounce";
 import { columns } from "@/shared/TableColumn";
 import { useActionState } from "@/store/action";
-import { Table } from "antd";
+import { Table, Tag } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import FilterFunction from "./FilterFunction";
 import ModalCreateProduct from "./modal-product/Create";
@@ -97,10 +97,10 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
       {/* For other tabs, it will not render anything */}
       {tab === "product" || tab === "owner" ? (
         <div
-          className="flex justify-end cursor-pointer"
+          className="flex justify-end cursor-pointer mb-2"
           onClick={() => setToggleAction()}
         >
-          {!toggleAction ? "Show Action" : "Hide Action"}
+          {!toggleAction ? <Tag>Show Action</Tag> : <Tag>Hide Action</Tag>}
         </div>
       ) : (
         <div className="text-transparent">1</div>
@@ -126,7 +126,14 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
         key={tab}
         loading={loading}
         rowKey={"uuid"}
-        pagination={{ pageSize: toggleAction ? 8 : 5 }}
+        pagination={{
+          pageSize:
+            (toggleAction && tab === "product") || tab === "owner"
+              ? 11
+              : (!toggleAction && tab === "product") || tab === "owner"
+              ? 9
+              : 11,
+        }}
         scroll={{ y: "calc(100vh - 200px)" }}
         dataSource={data}
         locale={{ emptyText: "No data available, please add a product" }}
@@ -158,6 +165,7 @@ const TableRender = ({ tab, userId }: TableRenderProps) => {
         setOpenViewModal={setOpenViewModal}
         favorite={favorite}
         setFavorite={setFavorite}
+        refetch={refetch}
       />
       <ModalUpdate
         tab="product"
